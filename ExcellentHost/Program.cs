@@ -31,46 +31,46 @@ namespace ExcellentHost
             WebSocket webSocket = new WebSocket("ws://tuxie.nu:10000/ws/excellenthost/");
             webSocket.OnMessage += (sender, eventArgs) =>
             {
-            //Console.WriteLine(eventArgs.Data);
-            MessageBase messageBase = JsonSerializer.Deserialize<MessageBase>(eventArgs.Data);
-            switch (messageBase.type)
-            {
-              case "EHCONNECT":
-                  EHCONNECT ehconnect = JsonSerializer.Deserialize<EHCONNECT>(eventArgs.Data);
-                  string connectstring = ehconnect.ip + ":" + ehconnect.port.ToString();
-                  if(!clientThreads.ContainsKey(connectstring))
-                  {
-                      ClientThread ct = new ClientThread();
-                      ct.StartClient(ehconnect.ip, ehconnect.port);
-                      clientThreads.Add(connectstring, ct);
-                  }
-                  else
-                  {
-                      string json = JsonSerializer.Serialize(new EHCONNECT(queryResult.PublicEndPoint.Address.ToString(), queryResult.PublicEndPoint.Port), typeof(EHCONNECT), new JsonSerializerOptions());
-                      webSocket.Send(json);
-                  }
+                //Console.WriteLine(eventArgs.Data);
+                MessageBase messageBase = JsonSerializer.Deserialize<MessageBase>(eventArgs.Data);
+                switch (messageBase.type)
+                {
+                    case "EHCONNECT":
+                        EHCONNECT ehconnect = JsonSerializer.Deserialize<EHCONNECT>(eventArgs.Data);
+                        string connectstring = ehconnect.ip + ":" + ehconnect.port.ToString();
+                        //                 debugOutput.Add("Got ehconnect");
+                        //                 Console.WriteLine(eventArgs.Data);
+                        if (!clientThreads.ContainsKey(connectstring) && !(ehconnect.port == queryResult.PublicEndPoint.Port && ehconnect.ip == queryResult.PublicEndPoint.Address.ToString()))
+                        {
+                            ClientThread ct = new ClientThread();
+                            ct.StartClient(ehconnect.ip, ehconnect.port);
+                            clientThreads.Add(connectstring, ct);
+                            string json = JsonSerializer.Serialize(new EHCONNECT(queryResult.PublicEndPoint.Address.ToString(), queryResult.PublicEndPoint.Port), typeof(EHCONNECT), new JsonSerializerOptions());
+                            webSocket.Send(json);
+                        }
 
-                  break;
-            }
+                        break;
+                }
             };
 
             webSocket.Connect();
 
-            if(queryResult != null)
+            if (queryResult != null)
             {
                 new ServerThread().StartServer(socket);
                 string json = JsonSerializer.Serialize(new EHCONNECT(queryResult.PublicEndPoint.Address.ToString(), queryResult.PublicEndPoint.Port), typeof(EHCONNECT), new JsonSerializerOptions());
                 webSocket.Send(json);
             }
 
-            while(true){ 
+            while (true)
+            {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Thread status");
                 Console.ForegroundColor = ConsoleColor.White;
 
                 foreach (KeyValuePair<string, ClientThread> thread in clientThreads)
                 {
-                   Console.WriteLine(thread.Value.Status);
+                    Console.WriteLine(thread.Value.Status);
                 }
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -79,13 +79,13 @@ namespace ExcellentHost
 
                 foreach (string line in debugOutput)
                 {
-                   Console.WriteLine(line);
+                    Console.WriteLine(line);
                 }
 
 
 
                 Thread.Sleep(1000);
-                Console.SetCursorPosition(0,0);
+                Console.SetCursorPosition(0, 0);
             }
         }
 

@@ -21,6 +21,8 @@ namespace ExcellentHost
         private Dictionary<UInt32, Stopwatch> pendingpings = new Dictionary<uint, Stopwatch>();
         private byte[] readbuffer = new byte[8];
 
+        public string Status;
+
         void OnUdpData(IAsyncResult result)
         {
             // this is what had been passed into BeginReceive as the second parameter:
@@ -30,7 +32,7 @@ namespace ExcellentHost
             // get the actual message and fill out the source:
             byte[] message = socket.EndReceive(result, ref source);
             // do what you'd like with `message` here:
-            Console.WriteLine("Got " + message.Length + " bytes from " + source);
+            //Console.WriteLine("Got " + message.Length + " bytes from " + source);
             // schedule the next receive operation once reading is done:
             socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
 
@@ -39,7 +41,7 @@ namespace ExcellentHost
             Stopwatch s = pendingpings[number];
             s.Stop();
 
-            Console.WriteLine("Got answer for " + number.ToString() + " elapsed time " + s.Elapsed.ToString());
+            //Console.WriteLine("Got answer for " + number.ToString() + " elapsed time " + s.Elapsed.ToString());
             pendingpings.Remove(number);
         }
 
@@ -57,7 +59,7 @@ namespace ExcellentHost
             while (running)
             {
                 SendPing();
-                Console.WriteLine("Number of pings waiting for result: " + pendingpings.Count.ToString());
+                Status = "Number of pings waiting for result: " + pendingpings.Count.ToString();
                 Thread.Sleep(1000);
             }
         }

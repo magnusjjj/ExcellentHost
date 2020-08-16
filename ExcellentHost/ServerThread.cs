@@ -24,7 +24,7 @@ namespace ExcellentHost
                 EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 1025);
                 socket.ReceiveFrom(buffer, ref remoteEndPoint);
                 socket.SendTo(buffer, remoteEndPoint);
-                Console.Out.WriteLineAsync("Received a packet from " + remoteEndPoint.ToString());
+                //Console.Out.WriteLineAsync("Received a packet from " + remoteEndPoint.ToString());
             }
         }
 

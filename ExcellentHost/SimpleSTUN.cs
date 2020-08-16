@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -10,6 +11,7 @@ namespace ExcellentHost
 {
     class SimpleSTUN
     {
+        public static event EventHandler<string> OnDebug;
         public static STUNQueryResult DoSTUN(Socket sock)
         {
             string[] stunhosts = new[] { "stun.l.google.com:19302", "galvinism.ink:3478" };
@@ -27,9 +29,11 @@ namespace ExcellentHost
                     if (queryResult.QueryError != STUNQueryError.Success)
                         throw new Exception("Query Error: " + queryResult.QueryError.ToString());
 
-                    Console.WriteLine("PublicEndPoint: {0}", queryResult.PublicEndPoint);
-                    Console.WriteLine("LocalEndPoint: {0}", queryResult.LocalEndPoint);
-                    Console.WriteLine("NAT Type: {0}", queryResult.NATType);
+                    
+                    Debug(String.Format("PublicEndPoint: {0}", queryResult.PublicEndPoint));
+                    Debug(String.Format("LocalEndPoint: {0}", queryResult.LocalEndPoint));
+                    Debug(String.Format("NAT Type: {0}", queryResult.NATType));
+                    
                     return queryResult;
                 }
                 catch (Exception e)
@@ -39,6 +43,11 @@ namespace ExcellentHost
             }
 
             return null;
+        }
+
+        public static void Debug(string input)
+        {
+            SimpleSTUN.OnDebug?.Invoke(null, input);
         }
     }
 }

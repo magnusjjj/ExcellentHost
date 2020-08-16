@@ -19,7 +19,7 @@ namespace ExcellentHost
         static void Main(string[] args)
         {
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPEndPoint local_ipendpoint = new IPEndPoint(IPAddress.Any, 0); //new IPEndPoint(IPAddress.Any, 1025);
+            IPEndPoint local_ipendpoint = new IPEndPoint(IPAddress.Any, 1025); //new IPEndPoint(IPAddress.Any, 1025);
             socket.Bind(local_ipendpoint);
             STUNQueryResult queryResult = SimpleSTUN.DoSTUN(socket);
 

@@ -20,6 +20,8 @@ namespace ExcellentHost
         private List<int> completedpings;
         private Dictionary<UInt32, Stopwatch> pendingpings = new Dictionary<uint, Stopwatch>();
         private byte[] readbuffer = new byte[8];
+        private string address;
+        private int port;
 
         public string Status;
 
@@ -59,7 +61,7 @@ namespace ExcellentHost
             while (running)
             {
                 SendPing();
-                Status = "Number of pings waiting for result: " + pendingpings.Count.ToString();
+                Status = address + ": " + port.ToString() + " , Number of pings waiting for result: " + pendingpings.Count.ToString();
                 Thread.Sleep(1000);
             }
         }
@@ -75,6 +77,8 @@ namespace ExcellentHost
 
         public void StartClient(string address, int port)
         {
+            this.address = address;
+            this.port = port;
             thread = new Thread(Main);
             thread.Start(new Tuple<string, int>(address, port));
         }

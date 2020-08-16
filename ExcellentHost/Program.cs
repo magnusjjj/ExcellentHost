@@ -38,14 +38,13 @@ namespace ExcellentHost
               case "EHCONNECT":
                   EHCONNECT ehconnect = JsonSerializer.Deserialize<EHCONNECT>(eventArgs.Data);
                   string connectstring = ehconnect.ip + ":" + ehconnect.port.ToString();
-                  if(!clientThreads.ContainsKey(connectstring))
+ //                 debugOutput.Add("Got ehconnect");
+ //                 Console.WriteLine(eventArgs.Data);
+                  if (!clientThreads.ContainsKey(connectstring) && !(ehconnect.port == queryResult.PublicEndPoint.Port && ehconnect.ip == queryResult.PublicEndPoint.Address.ToString()))
                   {
                       ClientThread ct = new ClientThread();
                       ct.StartClient(ehconnect.ip, ehconnect.port);
                       clientThreads.Add(connectstring, ct);
-                  }
-                  else
-                  {
                       string json = JsonSerializer.Serialize(new EHCONNECT(queryResult.PublicEndPoint.Address.ToString(), queryResult.PublicEndPoint.Port), typeof(EHCONNECT), new JsonSerializerOptions());
                       webSocket.Send(json);
                   }

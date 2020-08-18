@@ -5,6 +5,8 @@ using System.Net.Sockets;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
+using System.Threading.Tasks;
+using Open.Nat;
 using STUN;
 using STUN.Attributes;
 using WebSocketSharp;
@@ -27,6 +29,11 @@ namespace ExcellentHost
             socket.Bind(local_ipendpoint);
             SimpleSTUN.OnDebug += SimpleSTUN_OnDebug;
             STUNQueryResult queryResult = SimpleSTUN.DoSTUN(socket);
+
+//            Task.Run(DoUPNP);
+            //var synctask = DoUPNP(); 
+            //synctask.RunSynchronously();
+            
 
             WebSocket webSocket = new WebSocket("ws://tuxie.nu:10000/ws/excellenthost/");
             webSocket.OnMessage += (sender, eventArgs) =>
@@ -86,6 +93,17 @@ namespace ExcellentHost
                 Thread.Sleep(1000);
                 Console.SetCursorPosition(0,0);
             }
+        }
+
+
+        public static async Task<bool> DoUPNP()
+        {
+            var discoverer = new NatDiscoverer();
+            var cts = new CancellationTokenSource(10000);
+            var device = await discoverer.DiscoverDeviceAsync(PortMapper.Upnp, cts);
+
+            await device.CreatePortMapAsync(new Mapping(Protocol.Udp, 1025, 1025, "The Genesis Project"));
+            return true;
         }
 
         private static void SimpleSTUN_OnDebug(object sender, string e)
